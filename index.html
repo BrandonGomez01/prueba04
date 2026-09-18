@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>El Universo de Nosotros</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:white;font-family:'Space Grotesk',sans-serif;overflow:hidden;touch-action:none}
+h1{font-family:'Playfair Display',serif}
+.mundo{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px;z-index:5;background:#000}
+.mundo.active{display:flex}
+.btn{margin-top:25px;background:white;color:black;border:none;padding:14px 35px;border-radius:30px;font-weight:700;cursor:pointer;font-size:16px;transition:.3s}
+.btn:hover{transform:scale(1.05)}
+.progress{position:fixed;top:0;left:0;height:4px;background:#ff2d75;z-index:999;transition:.5s}
+
+/* MUNDO 1 MATRIX */
+#m1{background:black}
+#matrix{position:absolute;inset:0;opacity:.6}
+#m1-content{position:relative;z-index:2;text-align:center}
+#m1 input{background:rgba(0,255,70,.1);border:1px solid #00ff46;color:#00ff46;padding:12px 20px;border-radius:8px;text-align:center;font-size:18px;margin-top:20px;outline:none;width:260px}
+
+/* MUNDO 2 ESTRELLAS */
+#stars{position:absolute;inset:0}
+.star{position:absolute;width:3px;height:3px;background:white;border-radius:50%;cursor:pointer;animation:twinkle 2s infinite}
+@keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
+.star.found{background:#ff2d75;box-shadow:0 0 10px #ff2d75;transform:scale(2)}
+
+/* MUNDO 3 TIMELINE */
+#timeline-wrap{width:100%;overflow-x:auto;display:flex;gap:30px;padding:20px;scroll-snap-type:x mandatory}
+.planet{min-width:170px;height:230px;background:linear-gradient(180deg,#222,#111);border-radius:20px;border:1px solid #333;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;scroll-snap-align:center;transition:.3s}
+.planet:hover{border-color:#ff2d75;transform:translateY(-5px)}
+.planet.icon{font-size:50px;margin-bottom:10px}
+
+/* MUNDO 4 LAB */
+#monitor{width:300px;height:180px;border:2px solid #00ff46;border-radius:12px;background:rgba(0,255,70,.05);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:20px 0}
+#heart-rate{font-size:50px;animation:beat.8s infinite}
+@keyframes beat{0%{transform:scale(1)}50%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* MUNDO 5 JUEGO */
+#game-area{position:relative;width:95vw;max-width:400px;height:60vh;background:#0a0a0a;border:1px solid #333;border-radius:20px;overflow:hidden}
+#ship{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:35px}
+.item-game{position:absolute;font-size:22px;user-select:none}
+
+/* MUNDO 6 LINTERNA */
+#linterna-canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* MUNDO 7 FINAL */
+#final-ring{font-size:80px;animation:flotar 2s infinite}
+@keyframes flotar{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.kiss{position:fixed;top:-30px;font-size:30px;animation:caer 3s linear forwards;z-index:9999}
+@keyframes caer{to{transform:translateY(110vh) rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+
+<!-- MUNDO 1 -->
+<div class="mundo active" id="mundo1">
+<canvas id="matrix"></canvas>
+<div id="m1-content">
+<h1 style="color:#00ff46;font-size:2rem">INICIANDO SISTEMA...</h1>
+<p style="margin-top:10px;opacity:.8;color:#00ff46">Si encontraste esto, es porque sos el amor de mi vida</p>
+<p style="margin-top:30px">Escribí tu nombre para desbloquear nuestro universo</p>
+<input type="text" id="nombreInput" placeholder="Tu nombre aquí...">
+<button class="btn" onclick="validarNombre()" style="background:#00ff46">DESBLOQUEAR ♡</button>
+</div>
+</div>
+
+<!-- MUNDO 2 -->
+<div class="mundo" id="mundo2">
+<div id="stars"></div>
+<div style="position:relative;z-index:2;text-align:center;pointer-events:none">
+<h1>EL BIG BANG DE NOSOTROS</h1>
+<p>Fecha: 01/01/01</p>
+<p style="margin-top:15px;opacity:.7">Encontrá 7 estrellas rojas escondidas para formar nuestra constelación</p>
+<p id="star-count" style="margin-top:10px;color:#ff2d75;font-weight:700">0/7 encontradas</p>
+</div>
+</div>
+
+<!-- MUNDO 3 -->
+<div class="mundo" id="mundo3" style="justify-content:start;padding-top:60px">
+<h1>LA MÁQUINA DEL TIEMPO</h1>
+<p style="opacity:.6;margin-bottom:10px">Deslizá y tocá cada planeta</p>
+<div id="timeline-wrap"></div>
+<p style="margin-top:15px;opacity:.5" id="time-hint">0/8 recuerdos desbloqueados</p>
+</div>
+
+<!-- MUNDO 4 -->
+<div class="mundo" id="mundo4">
+<h1>LABORATORIO DEL AMOR</h1>
+<div id="monitor">
+<div id="heart-rate">💗</div>
+<div id="bpm" style="color:#00ff46;margin-top:10px">PULSO: 98 BPM</div>
+<div id="compat" style="margin-top:5px">Compatibilidad: Calculando...</div>
+</div>
+<div id="pregunta-box" style="text-align:center;max-width:320px">
+<h3 id="pregunta-txt">¿Me amás?</h3>
+<input type="text" id="respInput" placeholder="Escribí si..." style="margin-top:15px;padding:10px 15px;border-radius:20px;border:1px solid #333;background:#111;color:white;text-align:center">
+<br><button class="btn" onclick="responderLab()">Responder</button>
+</div>
+</div>
+
+<!-- MUNDO 5 -->
+<div class="mundo" id="mundo5">
+<h1 style="margin-bottom:10px">BATALLA FINAL</h1>
+<p>Atrapá: si 💖 - Esquivá: no 💔</p>
+<p id="game-score" style="color:#ff2d75;font-weight:700;margin:10px">0 / 100</p>
+<div id="game-area"><div id="ship">🚀</div></div>
+<button class="btn" id="startGameBtn" onclick="startGame()">EMPEZAR BATALLA</button>
+</div>
+
+<!-- MUNDO 6 -->
+<div class="mundo" id="mundo6" style="background:black">
+<div id="mensajes-linterna" style="position:absolute;inset:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;padding:30px;gap:20px;font-family:'Playfair Display';font-size:1.4rem;text-align:center">
+<div>si</div><div>si</div><div>si</div><div>si</div><div>si</div><div>si</div><div>si</div><div>💍</div>
+</div>
+<canvas id="linterna-canvas"></canvas>
+<div style="position:absolute;bottom:30px;z-index:3;text-align:center"><p>Moví el dedo como linterna</p><p id="linterna-prog" style="color:#ff2d75">0% explorado</p></div>
+</div>
+
+<!-- MUNDO 7 -->
+<div class="mundo" id="mundo7" style="background:radial-gradient(circle at center, #2a0a18, #000);overflow-y:auto">
+<div id="final-ring">💍</div>
+<h1 style="margin-top:20px;text-align:center">Encontraste el tesoro de nuestro universo</h1>
+<p style="max-width:500px;text-align:center;margin:15px;line-height:1.6;opacity:.9">
+si<br>si<br>si<br><br>Este es nuestro universo y quiero que dure para siempre. Gracias por llegar hasta acá, por jugar, por buscar. Todo esto lo hice porque sos lo mejor que me pasó el 01/01/01.
+</p>
+<div style="width:100%;max-width:400px;margin:20px">
+<iframe width="100%" height="200" src="https://www.youtube.com/embed/3AtDnEC4zak?autoplay=0" frameborder="0" allowfullscreen style="border-radius:12px"></iframe>
+</div>
+<button class="btn" onclick="finalSi()" style="background:#ff2d75;color:white;font-size:18px;padding:18px 40px">SÍ, QUIERO QUEDARME EN TU UNIVERSO ♡</button>
+<button class="btn" style="background:transparent;border:1px solid white;color:white;margin-top:10px" onclick="finalSi()">Dale, abrazame 🫂</button>
+</div>
+
+<script>
+let mundoActual=1; const totalMundos=7;
+function irAMundo(n){document.querySelectorAll('.mundo').forEach(m=>m.classList.remove('active'));document.getElementById('mundo'+n).classList.add('active');mundoActual=n;document.getElementById('progress').style.width=(n/totalMundos*100)+'%'; if(n==2)initStars(); if(n==3)initTimeline(); if(n==4)initLab(); if(n==6)initLinterna(); if(n==7)lluvia()}
+
+// MUNDO 1 MATRIX
+const cvs=document.getElementById('matrix'),ctx=cvs.getContext('2d');function resize(){cvs.width=innerWidth;cvs.height=innerHeight}resize();window.addEventListener('resize',resize);const letters="01♡SIAMOR".split("");let drops=Array(Math.floor(innerWidth/14)).fill(1);setInterval(()=>{ctx.fillStyle='rgba(0,0,0,0.05)';ctx.fillRect(0,0,cvs.width,cvs.height);ctx.fillStyle='#00ff46';ctx.font='14px monospace';drops.forEach((y,i)=>{ctx.fillText(letters[Math.floor(Math.random()*letters.length)],i*14,y*14);if(y*14>cvs.height&&Math.random()>.975)drops[i]=0;drops[i]++})},50);
+function validarNombre(){const v=document.getElementById('nombreInput').value.trim().toLowerCase();if(v.length<2){alert('Poné tu nombre hermosa');return}irAMundo(2)}
+
+// MUNDO 2 ESTRELLAS
+let starsFound=0;
+function initStars(){const cont=document.getElementById('stars');if(cont.children.length>0)return;for(let i=0;i<200;i++){const s=document.createElement('div');s.className='star';s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';const esRoja=Math.random()<.07;if(esRoja){s.dataset.roja="1";s.style.background='#ff2d75'}s.onclick=()=>{if(s.dataset.roja&&!s.classList.contains('found')){s.classList.add('found');starsFound++;document.getElementById('star-count').innerText=starsFound+'/7 encontradas';if(starsFound>=7){setTimeout(()=>irAMundo(3),800)}}};cont.appendChild(s)}}
+
+// MUNDO 3 TIMELINE
+const recuerdos=[
+{t:"01/01/01 - Inicio",icon:"💫",txt:"si - Nuestro inicio, todo empezó acá y fue perfecto."},
+{t:"Recuerdo 2",icon:"🪐",txt:"si"},
+{t:"Recuerdo 3",icon:"🌙",txt:"si"},
+{t:"Recuerdo 4",icon:"⭐",txt:"si"},
+{t:"Recuerdo 5",icon:"☄️",txt:"si"},
+{t:"Recuerdo 6",icon:"🌌",txt:"si"},
+{t:"Recuerdo 7",icon:"💖",txt:"si"},
+{t:"Recuerdo 8",icon:"💍",txt:"si - Hasta acá llegamos y quiero seguir sumando recuerdos."},
+];
+let unlocked=0;
+function initTimeline(){const wrap=document.getElementById('timeline-wrap');if(wrap.children.length>0)return;recuerdos.forEach((r,i)=>{const d=document.createElement('div');d.className='planet';d.innerHTML=`<div class='icon'>${r.icon}</div><b style='font-size:13px'>${r.t}</b><small style='opacity:.5;margin-top:5px'>Tocar</small>`;d.onclick=()=>{alert(r.txt);if(!d.dataset.open){d.dataset.open=1;unlocked++;document.getElementById('time-hint').innerText=unlocked+'/8 recuerdos desbloqueados';d.style.borderColor='#00ff46';if(unlocked>=8)setTimeout(()=>irAMundo(4),800)}};wrap.appendChild(d)})}
+
+// MUNDO 4 LAB
+const preguntas=["¿Me amás? (responde si)","¿Querés seguir conmigo? (responde si)","¿Te quedás en mi universo para siempre? (responde si)"];let pregIdx=0;
+function initLab(){pregIdx=0;document.getElementById('pregunta-txt').innerText=preguntas[0];document.getElementById('compat').innerText='Compatibilidad: 30%'}
+function responderLab(){const v=document.getElementById('respInput').value.trim().toLowerCase();if(v!=="si"&&v!=="sí"){document.getElementById('heart-rate').innerText='💔';document.getElementById('bpm').innerText='PULSO: 40 BPM - ERROR';return}document.getElementById('heart-rate').innerText='💗';pregIdx++;document.getElementById('respInput').value='';if(pregIdx<preguntas.length){document.getElementById('pregunta-txt').innerText=preguntas[pregIdx];document.getElementById('compat').innerText=`Compatibilidad: ${30+pregIdx*25}%`;document.getElementById('bpm').innerText=`PULSO: ${98+pregIdx*10} BPM`}else{document.getElementById('compat').innerText='Compatibilidad: 100% - ALMAS GEMELAS CONFIRMADAS';document.getElementById('pregunta-box').innerHTML='<h2 style="color:#00ff46">LABORATORIO APROBADO</h2>';setTimeout(()=>irAMundo(5),1200)}}
+
+// MUNDO 5 JUEGO
+let score=0,gameInterval,gameActive=false;
+function startGame(){score=0;gameActive=true;document.getElementById('startGameBtn').style.display='none';const area=document.getElementById('game-area');document.getElementById('game-score').innerText='0 / 100';area.addEventListener('mousemove',moveShip);area.addEventListener('touchmove',e=>{moveShip(e.touches[0]);e.preventDefault()},{passive:false});gameInterval=setInterval(spawnItem,400);setTimeout(()=>{if(gameActive){gameActive=false;clearInterval(gameInterval);if(score>=100)irAMundo(6);else{alert('Casi! Te faltó un poco, intentá de nuevo');document.getElementById('startGameBtn').style.display='block';area.querySelectorAll('.item-game').forEach(el=>el.remove())}}},15000)}
+function moveShip(e){const area=document.getElementById('game-area');const rect=area.getBoundingClientRect();let x=e.clientX-rect.left;document.getElementById('ship').style.left=x+'px'}
+function spawnItem(){if(!gameActive)return;const area=document.getElementById('game-area');const el=document.createElement('div');el.className='item-game';const esBueno=Math.random()>.4;el.innerText=esBueno?'si 💖':'no 💔';el.style.left=Math.random()*(area.clientWidth-30)+'px';el.style.top='-30px';area.appendChild(el);let top=0;const fall=setInterval(()=>{if(!gameActive){clearInterval(fall);el.remove();return}top+=4;el.style.top=top+'px';const ship=document.getElementById('ship');const shipRect=ship.getBoundingClientRect();const itemRect=el.getBoundingClientRect();if(!(itemRect.bottom<shipRect.top||itemRect.top>shipRect.bottom||itemRect.right<shipRect.left||itemRect.left>shipRect.right)){if(esBueno){score+=10}else{score-=5;if(score<0)score=0}document.getElementById('game-score').innerText=score+' / 100';el.remove();clearInterval(fall);if(score>=100){gameActive=false;clearInterval(gameInterval);setTimeout(()=>irAMundo(6),600)}}if(top>area.clientHeight){el.remove();clearInterval(fall)}},20)}
+
+// MUNDO 6 LINTERNA
+let explorado=0;
+function initLinterna(){const canvas=document.getElementById('linterna-canvas');const ctx2=canvas.getContext('2d');function resize2(){canvas.width=canvas.parentElement.clientWidth;canvas.height=canvas.parentElement.clientHeight;ctx2.fillStyle='black';ctx2.fillRect(0,0,canvas.width,canvas.height)}resize2();let mx=-200,my=-200;function draw(){ctx2.globalCompositeOperation='source-over';ctx2.fillStyle='black';ctx2.fillRect(0,0,canvas.width,canvas.height);ctx2.globalCompositeOperation='destination-out';let g=ctx2.createRadialGradient(mx,my,0,mx,my,110);g.addColorStop(0,'rgba(0,0,0,1)');g.addColorStop(1,'rgba(0,0,0,0)');ctx2.fillStyle=g;ctx2.beginPath();ctx2.arc(mx,my,110,0,Math.PI*2);ctx2.fill();explorado+=0.2;document.getElementById('linterna-prog').innerText=Math.min(100,Math.floor(explorado))+'% explorado';if(explorado>90){setTimeout(()=>irAMundo(7),800)}}canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;draw()});canvas.addEventListener('touchmove',e=>{const r=canvas.getBoundingClientRect();mx=e.touches[0].clientX-r.left;my=e.touches[0].clientY-r.top;draw();e.preventDefault()},{passive:false});draw()}
+
+function lluvia(){for(let i=0;i<50;i++){setTimeout(()=>{const b=document.createElement('div');b.className='kiss';b.innerText=['💖','😘','💋','si'][Math.floor(Math.random()*4)];b.style.left=Math.random()*100+'vw';document.body.appendChild(b);setTimeout(()=>b.remove(),3000)},i*80)};if(navigator.vibrate)navigator.vibrate([100,50,200])}
+function finalSi(){const txt=encodeURIComponent('SÍ, quiero quedarme en tu universo para siempre. Acabo de pasar por los 7 mundos y lloré. Te amo ♡ - Fecha 01/01/01');window.open(`https://wa.me/5491141643081?text=${txt}`,'_blank')}
+</script>
+</body>
+</html>
